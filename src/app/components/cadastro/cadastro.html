@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Refugiado</title>
+    <link rel="stylesheet" href="cadastro.css">
+</head>
+<body>
+    <div class="container" style="max-width: 600px;"> <h2>Cadastro de Refugiado</h2>
+        <form id="cadastroForm">
+            <div class="form-group">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="endereco">Endereço Atual</label>
+                <input type="text" id="endereco" required>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade" min="0" required>
+                </div>
+                <div class="form-group" style="flex: 2;">
+                    <label for="profissao">Profissão</label>
+                    <input type="text" id="profissao" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="religiao">Religião</label>
+                <select id="religiao" required>
+                    <option value="">Selecione...</option>
+                    <option value="muculmano">Muçulmano</option>
+                    <option value="judeu">Judeu</option>
+                    <option value="catolico">Católico</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ideologia">Ideologia Política</label>
+                <select id="ideologia" required>
+                    <option value="">Selecione...</option>
+                    <option value="esquerda">Esquerda</option>
+                    <option value="centro">Centro</option>
+                    <option value="direita">Direita</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="filhos">Nº de Filhos</label>
+                    <input type="number" id="filhos" min="0" required>
+                </div>
+                <div class="form-group" style="flex: 2;">
+                    <label for="renda">Renda Familiar (Pré-Guerra)</label>
+                    <input type="number" id="renda" step="0.01" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="escolaridade">Maior Grau de Formação</label>
+                <select id="escolaridade" required>
+                    <option value="">Selecione...</option>
+                    <option value="fundamental">Ensino Fundamental</option>
+                    <option value="medio">Ensino Médio</option>
+                    <option value="superior">Ensino Superior</option>
+                    <option value="pos">Pós-Graduação / Mestrado / Doutorado</option>
+                </select>
+            </div>
+
+            <button type="submit">Finalizar Cadastro</button>
+            <a [routerLink]="['/login']" class="link-action">Voltar para o Login</a>
+        </form>
+    </div>
+</body>
+</html>
