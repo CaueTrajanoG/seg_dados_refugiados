@@ -6,32 +6,51 @@
     <link rel="stylesheet" href="cadastro.css">
 </head>
 <body>
+    <button type="button" (click)="toggleSenha()" class="btn-toggle">
+        @if (senhaVisivel) {<span>Ocultar</span>} @else {<span>Mostrar</span>}
+    </button>
     <div class="container" style="max-width: 600px;"> <h2>Cadastro de Refugiado</h2>
-        <form id="cadastroForm">
+
+        <form [formGroup]="cadastroForm" (ngSubmit)="registrar()">
             <div class="form-group">
                 <label for="nome">Nome Completo</label>
-                <input type="text" id="nome" required>
+                <input type="text" formControlName="nome" id="nome" required>
+            </div>
+            
+            <!--Cadastro de email com uma verificação inicial-->
+            <div class="form-group">
+                <label for="nome">email</label>
+                <input type="text" formControlName="email" (blur)="validarEmail()" [class.campo-sucesso]="emailValido">                   
+            </div>
+
+            <div class="form-group">
+                <label for="senha">senha</label>
+                <input [type]="senhaVisivel ? 'text' : 'password'" formControlName="senha" (blur)="validarSenha()" id="senha" [class.campo-sucesso]="senhaValida" required>
+                
+            </div> 
+            <div class="form-group">
+                <label for="confirmaSenha">ConfirmaSenha</label>
+                <input [type]="senhaVisivel ? 'text' : 'password'" formControlName="confirmaSenha" (blur)="validarSenha()" id="confirmaSenha" [class.campo-sucesso]="senhaValida" required>
             </div>
             
             <div class="form-group">
                 <label for="endereco">Endereço Atual</label>
-                <input type="text" id="endereco" required>
+                <input type="text" formControlName="endereco" placeholder="(opicional)" id="endereco">
             </div>
-
             <div style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex: 1;">
                     <label for="idade">Idade</label>
-                    <input type="number" id="idade" min="0" required>
+                    <input type="number" formControlName="idade" placeholder="(opicional)" id="idade" min="0">
                 </div>
                 <div class="form-group" style="flex: 2;">
-                    <label for="profissao">Profissão</label>
-                    <input type="text" id="profissao" required>
+                    <label for="profissao">Profissão </label>
+                    <input type="text" formControlName="profissao" placeholder="(opicional)" id="profissao">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="religiao">Religião</label>
-                <select id="religiao" required>
+                <label for="religiao">Religião (opicional)</label>
+                <select id="religiao"  formControlName="religiao">
                     <option value="">Selecione...</option>
                     <option value="muculmano">Muçulmano</option>
                     <option value="judeu">Judeu</option>
@@ -41,8 +60,8 @@
             </div>
 
             <div class="form-group">
-                <label for="ideologia">Ideologia Política</label>
-                <select id="ideologia" required>
+                <label for="ideologia">Ideologia Política (opicional)</label>
+                <select id="ideologia" formControlName="ideologia">
                     <option value="">Selecione...</option>
                     <option value="esquerda">Esquerda</option>
                     <option value="centro">Centro</option>
@@ -53,17 +72,17 @@
             <div style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex: 1;">
                     <label for="filhos">Nº de Filhos</label>
-                    <input type="number" id="filhos" min="0" required>
+                    <input type="number" formControlName="qtdFilhos"  placeholder="(opicional)" id="filhos" min="0" >
                 </div>
                 <div class="form-group" style="flex: 2;">
                     <label for="renda">Renda Familiar (Pré-Guerra)</label>
-                    <input type="number" id="renda" step="0.01" required>
+                    <input type="number" formControlName="rendaPreGuerra" placeholder="(opicional)" id="renda" step="0.01" >
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="escolaridade">Maior Grau de Formação</label>
-                <select id="escolaridade" required>
+                <label for="escolaridade">Maior Grau de Formação (opicional)</label>
+                <select id="escolaridade" formControlName="formacao" >
                     <option value="">Selecione...</option>
                     <option value="fundamental">Ensino Fundamental</option>
                     <option value="medio">Ensino Médio</option>
@@ -72,7 +91,10 @@
                 </select>
             </div>
 
-            <button type="submit">Finalizar Cadastro</button>
+            <button type="submit" [disabled]="cadastroForm.invalid">
+                {{ modoEdicao ? 'Salvar Alterações' : 'Finalizar Cadastro' }}
+            </button>
+
             <a [routerLink]="['/login']" class="link-action">Voltar para o Login</a>
         </form>
     </div>
