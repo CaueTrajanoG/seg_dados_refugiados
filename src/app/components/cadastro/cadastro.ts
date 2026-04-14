@@ -141,16 +141,24 @@ export class CadastroComponent {
 
   senhaValida: Boolean = false;  
   validarSenha(){    
+    //black list
+    const SENHAS_PROIBIDAS = ['123456', '12345678', 'password', 'senha123','qwerty', 'admin', 'mudar123', 'refugiado2026'];
     const senha1 = this.cadastroForm.get('senha')?.value;
     const senha2 = this.cadastroForm.get('confirmaSenha')?.value;
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
-    if(passwordPattern.test(senha1)){      
-      if(senha1 == senha2){
-        this.senhaValida = true;
+
+
+    if(!SENHAS_PROIBIDAS.includes(senha1?.toLowerCase())){ 
+      if(passwordPattern.test(senha1)){      
+        if(senha1 == senha2){        
+          this.senhaValida = true;
+        }
+      }else{
+        this.senhaValida = false;
+        alert("Senha invalida, revise!")
       }
     }else{
-      this.senhaValida = false;
-      alert("Senha invalida, revise!")
+      alert("Senha fraca, para sua segurança inclua maiusculas e caracteres especiais.")
     }
   }
 
