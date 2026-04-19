@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormGroup, ReactiveFormsModule, Validators, FormBuilder } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DatabaseService } from '../../core/database';
-import * as bcrypt from 'bcryptjs';
 import { Router } from '@angular/router';
+import { OculterPass } from '../../services/OcultarPass';
 
 @Component({
   selector: 'app-login',
@@ -11,8 +11,10 @@ import { Router } from '@angular/router';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
+
 export class LoginComponent {
   loginForm: FormGroup;
+  private oculter = inject(OculterPass);
   constructor(
       private fb: FormBuilder,
       private dbService: DatabaseService, 
@@ -31,17 +33,17 @@ export class LoginComponent {
     if(this.validarEmail()){
       try {      
         const usuarioEncontrado = await this.dbService.usuarios
-          .where('email').equals(emailDigitado.toLowerCase()).first(); 
+          .where('email').equals(emailDigitado.toLowerCase()).first();
 
         if (!usuarioEncontrado) {
           alert('Este e-mail não está cadastrado.');
           return;
         }      
         // O bcrypt compara a senha digitada com o Hash salvo no banco
-        const senhaValida = await bcrypt.compare(senha, usuarioEncontrado.senha!);
+        const senhaValida = await this.oculter.passwordComparer(senha, usuarioEncontrado.senha!);
 
         if (senhaValida) {
-          alert(`Bem-vindo, ${usuarioEncontrado.nome}!`);
+          //alert(`Bem-vindo, ${usuarioEncontrado.nome}!`);
           this.router.navigate(['/cadastro'], { 
             state: { usuarioLogado: usuarioEncontrado } 
           });
@@ -68,9 +70,5 @@ export class LoginComponent {
       emailValido = false
     }
     return emailValido;
-  }
-  async protegerSenha(senha: string): Promise<string> {
-    const salt = await bcrypt.genSalt(10); 
-    return await bcrypt.hash(senha, salt);
   }
 }

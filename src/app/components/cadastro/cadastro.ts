@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormGroup, ReactiveFormsModule, Validators, FormBuilder } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DatabaseService } from '../../core/database';
-import * as bcrypt from 'bcryptjs';
 import { Router } from '@angular/router';
+import { OculterPass } from '../../services/OcultarPass'
+import { EmailVerifier } from '../../services/email-verifier'
+import { PasswordVerifier } from '../../services/password-verifier'
 
 @Component({
   selector: 'app-cadastro',
@@ -14,13 +16,16 @@ import { Router } from '@angular/router';
 export class CadastroComponent {
   modoEdicao = false;
   idUsuarioLogado?: number;
-
   cadastroForm: FormGroup;
+  private oculter = inject(OculterPass);
+  private emailVerifier = inject(EmailVerifier);
+  private passwordVerifier = inject(PasswordVerifier);
+
   constructor(
     private fb: FormBuilder, 
     private dbService: DatabaseService,
     private router: Router
-  ) {
+  ) { 
         
     this.cadastroForm = this.fb.group
     ({
@@ -63,8 +68,8 @@ export class CadastroComponent {
 
   async registrar() {  
     if (this.cadastroForm.valid && this.senhaValida) {     
-      const novosDados = this.cadastroForm.value;      
-      const hashSenha = await this.protegerSenha(novosDados.senha);
+      const novosDados = this.cadastroForm.value;
+      const hashSenha = await this.oculter.passwordOculter(novosDados.senha);
       try{
             if (this.modoEdicao && this.idUsuarioLogado) {              
               await this.dbService.usuarios.put({
@@ -114,52 +119,17 @@ export class CadastroComponent {
     } 
   }
 
-  emailValido: Boolean = false;
+  emailValido: Boolean = false;  
   async validarEmail(){
-    const emailDigitado = this.cadastroForm.get('email')?.value;  
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-     
-    if(emailPattern.test(emailDigitado)){
-      //verificar se email esta disponivel
-      const usuarioEncontrado = await this.dbService.usuarios.where('email').equals(emailDigitado.toLowerCase()).first(); 
-
-      if(!usuarioEncontrado){
-        this.emailValido = true
-      }else{
-        alert("Email já está em uso.")
-        this.emailValido = false
-      }
-    }else{
-      alert("Insira um email valido")
-    }
-  }
-
-  async protegerSenha(senha: string): Promise<string> {
-    const salt = await bcrypt.genSalt(10); 
-    return await bcrypt.hash(senha, salt);
+    this.emailValido = await this.emailVerifier.verifier(this.cadastroForm.get('email')?.value)    
   }
 
   senhaValida: Boolean = false;  
-  validarSenha(){    
-    //black list
-    const SENHAS_PROIBIDAS = ['123456', '12345678', 'password', 'senha123','qwerty', 'admin', 'mudar123', 'refugiado2026'];
-    const senha1 = this.cadastroForm.get('senha')?.value;
-    const senha2 = this.cadastroForm.get('confirmaSenha')?.value;
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{8,}$/
-
-
-    if(!SENHAS_PROIBIDAS.includes(senha1?.toLowerCase())){ 
-      if(passwordPattern.test(senha1)){      
-        if(senha1 == senha2){        
-          this.senhaValida = true;
-        }
-      }else{
-        this.senhaValida = false;
-        alert("Senha invalida, revise!")
-      }
-    }else{
-      alert("Senha fraca, para sua segurança inclua maiusculas e caracteres especiais.")
-    }
+  validarSenha(){
+    this.senhaValida = this.passwordVerifier.verifier(
+      this.cadastroForm.get('senha')?.value,
+      this.cadastroForm.get('confirmaSenha')?.value
+    )
   }
 
   //botao toggle

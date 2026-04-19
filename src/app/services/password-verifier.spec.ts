@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DatabaseService } from './database';
+import { PasswordVerifier } from './password-verifier';
 
-describe('Database', () => {
-  let service: DatabaseService;
+describe('PasswordVerifier', () => {
+  let service: PasswordVerifier;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DatabaseService);
+    service = TestBed.inject(PasswordVerifier);
   });
 
   it('should be created', () => {

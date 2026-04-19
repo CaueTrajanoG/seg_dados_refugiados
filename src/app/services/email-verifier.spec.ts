@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DatabaseService } from './database';
+import { EmailVerifier } from './email-verifier';
 
-describe('Database', () => {
-  let service: DatabaseService;
+describe('EmailVerifier', () => {
+  let service: EmailVerifier;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DatabaseService);
+    service = TestBed.inject(EmailVerifier);
   });
 
   it('should be created', () => {
